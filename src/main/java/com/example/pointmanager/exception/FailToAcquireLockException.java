@@ -1,4 +1,4 @@
-package com.example.pointmanager.domain.points.exceptions;
+package com.example.pointmanager.exception;
 
 public class FailToAcquireLockException extends RuntimeException{
     public FailToAcquireLockException(String message) {
