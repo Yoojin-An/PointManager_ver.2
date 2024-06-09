@@ -1,10 +1,10 @@
-package com.example.pointmanager.domain.points;
+package com.example.pointmanager.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
 
-@Entity
 @Getter
+@Entity
 public class PointsHistory{
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,5 +41,17 @@ public class PointsHistory{
         pointsHistory.transactionType = transactionType;
         pointsHistory.updateMillis = System.currentTimeMillis();
         return pointsHistory;
+    }
+
+    @Override
+    public String toString() {
+        return "PointsHistory{" +
+                "id=" + id +
+                ", userId=" + userId +
+                ", amount=" + amount +
+                ", transactionType=" + transactionType +
+                ", updateMillis=" + updateMillis +
+                ", version=" + version +
+                '}';
     }
 }
