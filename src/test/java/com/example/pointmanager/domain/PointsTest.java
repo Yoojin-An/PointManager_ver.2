@@ -1,6 +1,5 @@
 package com.example.pointmanager.domain;
 
-import com.example.pointmanager.domain.point.Points;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -14,7 +13,7 @@ public class PointsTest {
 
         // when
         long amountToCharge = 100000;
-        long TotalBalance = points.charge(100000).amount();
+        long TotalBalance = points.charge(100000).getAmount();
 
         // then
         assertEquals(balance + amountToCharge, TotalBalance);
@@ -41,7 +40,7 @@ public class PointsTest {
 
         // when
         long amountToUse = 100;
-        long totalBalance = points.use(amountToUse).amount();
+        long totalBalance = points.use(amountToUse).getAmount();
 
         // then
         assertEquals(balance - amountToUse, totalBalance);
