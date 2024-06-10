@@ -36,7 +36,7 @@ public class OptimisticLockPointsFacade implements PointsService {
             } catch (InvalidPointsException e) {
                 throw new InvalidPointsException(e.getMessage());
             } catch (Exception e) {
-                Thread.sleep(50);
+                Thread.sleep(10000);
             }
         }
     }

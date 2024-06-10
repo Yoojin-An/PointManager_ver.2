@@ -5,14 +5,14 @@ import com.example.pointmanager.domain.PointsHistory;
 import com.example.pointmanager.repository.PointsHistoryRepository;
 import com.example.pointmanager.repository.PointsRepository;
 import com.example.pointmanager.exception.InvalidPointsException;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
-
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
 @Profile("pessimistic")
@@ -24,14 +24,14 @@ public class PessimisticLockPointsService implements PointsService {
     private final PointsHistoryRepository pointsHistoryRepository;
 
     @Override
-    @Transactional
+    @Transactional(propagation = REQUIRES_NEW, isolation = Isolation.READ_COMMITTED)
     public Points findPoints(long userId) {
         return pointsRepository.findPointsByUserIdWithPessimisticLock(userId)
                 .orElseThrow(() -> new InvalidPointsException("userId가 존재하지 않습니다."));
     }
 
     @Override
-    @Transactional
+    @Transactional(propagation = REQUIRES_NEW, isolation = Isolation.READ_COMMITTED)
     public List<PointsHistory> findPointsHistory(long userId) {
         List<PointsHistory> pointsHistory = pointsHistoryRepository.findPointsHistoryByUserIdWithPessimisticLock(userId);
         if (pointsHistory.isEmpty()) {
@@ -41,7 +41,7 @@ public class PessimisticLockPointsService implements PointsService {
     }
 
     @Override
-    @Transactional
+    @Transactional(propagation = REQUIRES_NEW, isolation = Isolation.READ_COMMITTED)
     public Points chargePoints(long userId, long amountToCharge) {
         Points points = pointsRepository.findPointsByUserIdWithPessimisticLock(userId)
                 .orElseThrow(() -> new InvalidPointsException("userId가 존재하지 않습니다."));
@@ -55,7 +55,7 @@ public class PessimisticLockPointsService implements PointsService {
     }
 
     @Override
-    @Transactional
+    @Transactional(propagation = REQUIRES_NEW, isolation = Isolation.READ_COMMITTED)
     public Points usePoints(long userId, long amountToUse) {
         Points points = pointsRepository.findPointsByUserIdWithPessimisticLock(userId)
                 .orElseThrow(() -> new InvalidPointsException("userId가 존재하지 않습니다."));

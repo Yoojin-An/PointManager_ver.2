@@ -11,9 +11,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -35,7 +37,7 @@ public class PointsServiceTest {
     @BeforeEach
     public void before() {
         // 1번 유저의 잔고에 3번 충전, 1번 사용 결과 10000 포인트가 있는 상황을 가정
-        pointsRepository.saveAndFlush(new Points(1, 10000));
+        pointsRepository.save(new Points(1, 10000));
         pointsHistoryRepository.saveAndFlush(PointsHistory.of(1, 10000, PointsHistory.TransactionType.CHARGE));
         pointsHistoryRepository.saveAndFlush(PointsHistory.of(1, 10000, PointsHistory.TransactionType.CHARGE));
         pointsHistoryRepository.saveAndFlush(PointsHistory.of(1, 10000, PointsHistory.TransactionType.CHARGE));
@@ -148,7 +150,7 @@ public class PointsServiceTest {
         long points = pointsService.chargePoints(userId, amountToCharge).getAmount();
 
         // then: 잔고에 충전할 금액을 더한 값이 충전 결과와 같은지 검증
-        assertEquals(balance + amountToCharge, points);
+        assertThat(points).isEqualTo(balance + amountToCharge);
     }
 
     @Test
