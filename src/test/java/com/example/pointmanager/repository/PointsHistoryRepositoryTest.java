@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
@@ -26,8 +27,8 @@ public class PointsHistoryRepositoryTest {
         List<PointsHistory> result = Collections.singletonList(pointsHistoryRepository.save(pointsHistory));
 
         // then
-        assertEquals(1, result.get(0).getUserId());
-        assertEquals(pointsHistory.getAmount(), result.get(0).getAmount());
+        assertThat(result.get(0).getUserId()).isEqualTo(1);
+        assertThat(result.get(0).getAmount()).isEqualTo(pointsHistory.getAmount());
     }
     @Test
     void findPointsHistoryByUserId_메서드로_pointsHistory_데이터를_찾아올_수_있다() {
