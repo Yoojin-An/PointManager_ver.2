@@ -11,7 +11,7 @@ spring:
 #    driver-class-name: com.mysql.cj.jdbc.Driver
 #    url: jdbc:mysql://127.0.0.1:3306/points
 #    username: root
-#    password: 1234
+#    password: qpflqpfl95!
   jpa:
     hibernate:
       ddl-auto: create-drop
@@ -19,6 +19,20 @@ spring:
     show-sql: true
   profiles:
     active: optimistic
+#
+#spring:
+#  jpa:
+#    hibernate:
+#      ddl-auto: create
+#    show-sql: true
+#    database-platform: org.hibernate.dialect.MySQLDialect
+#  datasource:
+##    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://127.0.0.1:3306/points
+#    username: root
+#    password: qpflqpfl95!
+#  profiles:
+#    active: optimistic
 
 logging:
   level:

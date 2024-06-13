@@ -25,6 +25,20 @@ public class PointsController {
     private static final Logger logger = LoggerFactory.getLogger(PointsController.class);
 
     /**
+     * 유저 등록
+     */
+//    @PostMapping("{id}/enroll")
+//    public ResponseEntity<PointsDto> enrollUser(
+//            @PathVariable long id
+//    ) {
+//        Points points = pointsService.enrollUser(id);
+//        PointsDto pointsDto = new PointsDto(points);
+////        logger.info(String.format("id %d번 유저를 등록했습니다. id, points.getAmount()));
+//        return ResponseEntity.ok(pointsDto);
+//    }
+
+
+    /**
      * 특정 유저의 포인트 조회
      */
     @GetMapping("{id}")

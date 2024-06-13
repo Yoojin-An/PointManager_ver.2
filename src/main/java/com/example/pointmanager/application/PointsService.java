@@ -8,6 +8,7 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 
 public interface PointsService {
+    Points enrollUser(long userId);
     Points findPoints(long userId);
     List<PointsHistory> findPointsHistory(long userId);
     Points chargePoints(long userId, long amountToCharge) throws InterruptedException;

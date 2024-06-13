@@ -22,6 +22,9 @@ public class OptimisticLockPointsService {
     private final PointsRepository pointsRepository;
     private final PointsHistoryRepository pointsHistoryRepository;
 
+    public Points enrollUser(long userId) {
+        return new Points(userId, 0);
+    }
     @Transactional(isolation = Isolation.READ_COMMITTED, propagation = REQUIRES_NEW)
     public Points findPoints(long userId) {
         return pointsRepository.findPointsByUserId(userId)
@@ -40,7 +43,7 @@ public class OptimisticLockPointsService {
     @Transactional(isolation = Isolation.READ_COMMITTED, propagation = REQUIRES_NEW)
     public Points chargePoints(long userId, long amountToCharge) {
         Points points = pointsRepository.findPointsByUserIdWithOptimisticLock(userId)
-                .orElseGet(() ->new Points(userId, 0)); // 조회 결과 없으면 잔고 0인 새로운 Points 객체 생성
+                .orElseThrow(() -> new InvalidPointsException("userId가 존재하지 않습니다."));
 
         Points updatedPoints = points.charge(amountToCharge);
 

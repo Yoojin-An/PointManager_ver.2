@@ -36,7 +36,7 @@ public class OptimisticLockPointsFacadeTest {
     }
 
     @Test
-    void 동시에_100명의_유저가_충전에_성공한다() throws InterruptedException {
+    void 동시에_100번의_충전에_성공한다() throws InterruptedException {
         int threadCount = 100;
         ExecutorService executorService = Executors.newFixedThreadPool(32);
         CountDownLatch latch = new CountDownLatch(threadCount);

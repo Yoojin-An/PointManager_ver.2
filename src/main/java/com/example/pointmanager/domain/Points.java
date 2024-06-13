@@ -27,8 +27,6 @@ public class Points {
         this.userId = userId;
         this.amount = amount;
     }
-
-
     public Points charge(long amountToCharge) {
         if (amountToCharge < 0) throw new InvalidPointsException("포인트 충전 불가: 유효하지 않은 값입니다.");
         long balance = this.amount + amountToCharge;

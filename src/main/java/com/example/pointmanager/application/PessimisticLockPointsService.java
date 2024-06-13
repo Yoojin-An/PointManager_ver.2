@@ -24,6 +24,11 @@ public class PessimisticLockPointsService implements PointsService {
     private final PointsHistoryRepository pointsHistoryRepository;
 
     @Override
+    public Points enrollUser(long userId) {
+        return new Points(userId, 0);
+    }
+
+    @Override
     @Transactional(propagation = REQUIRES_NEW, isolation = Isolation.READ_COMMITTED)
     public Points findPoints(long userId) {
         return pointsRepository.findPointsByUserIdWithPessimisticLock(userId)

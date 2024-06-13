@@ -51,6 +51,22 @@ public class PointsServiceTest {
     }
 
     /**
+     * 유저 등록 테스트
+     */
+    @Test
+    void 유저_등록에_성공한다() {
+        // given: 아이디
+        long userId = 1L;
+
+        // when: 유저 등록
+        long enrolledId = pointsService.enrollUser(userId).getUserId();
+
+        // then: 생성한 아이디 확인
+        assertEquals(1, enrolledId);
+    }
+
+
+    /**
      * 포인트 조회 테스트
      */
     @Test
