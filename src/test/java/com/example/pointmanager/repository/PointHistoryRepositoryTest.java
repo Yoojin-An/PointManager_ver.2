@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,7 +25,7 @@ public class PointsHistoryRepositoryTest {
         PointsHistory pointsHistory = PointsHistory.of(1, 10000L, PointsHistory.TransactionType.USE);
 
         // when
-        List<PointsHistory> result = Collections.singletonList(pointsHistoryRepository.save(pointsHistory));
+        PointsHistory result = pointsHistoryRepository.save(pointsHistory);
 
         // then
         assertThat(result.get(0).getUserId()).isEqualTo(1);

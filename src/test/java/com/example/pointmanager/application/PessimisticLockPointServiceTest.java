@@ -1,7 +1,6 @@
 package com.example.pointmanager.application;
 
 import com.example.pointmanager.domain.Points;
-import com.example.pointmanager.domain.PointsHistory;
 import com.example.pointmanager.repository.PointsHistoryRepository;
 import com.example.pointmanager.repository.PointsRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -32,15 +31,18 @@ public class PessimisticLockPointsServiceTest {
         pointsHistoryRepository.deleteAll();
     }
     @Test
-    void 동시에_100명의_유저가_충전에_성공한다() throws InterruptedException {
+    void 동시에_100번의_충전에_성공한다() throws InterruptedException {
+        pointsRepository.save(new Points(1, 0));
         int threadCount = 100;
+        int chargeAmount = 1000;
         ExecutorService executorService = Executors.newFixedThreadPool(32);
         CountDownLatch latch = new CountDownLatch(threadCount);
+        var expectedAmount = threadCount * chargeAmount
 
         for (int i = 0; i < threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    Points points = pessimisticLockPointsService.chargePoints(1L, 1L);
+                    pessimisticLockPointsService.chargePoints(1L, chargeAmount);
                 } finally {
                     latch.countDown();
                 }
@@ -49,6 +51,6 @@ public class PessimisticLockPointsServiceTest {
         latch.await();
 
         Points points = pointsRepository.findPointsByUserId(1L).orElseThrow();
-        assertEquals(10100, points.getAmount());
+        assertEquals(expectedAmount, points.getAmount());
     }
 }

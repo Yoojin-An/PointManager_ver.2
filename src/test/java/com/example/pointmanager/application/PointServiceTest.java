@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
-@ActiveProfiles("optimistic")
+@ActiveProfiles("pessimistic")
 public class PointsServiceTest {
     private final PointsService pointsService;
     private final PointsRepository pointsRepository;
@@ -111,7 +110,7 @@ public class PointsServiceTest {
      * 포인트 이용 내역 조회 테스트
      */
     @Test
-    public void 포인트_충전_또는_사용_이력이_있는_경우_포인트_내역_조회에_성공한다() {
+    public void 포인트사용_이력이_있는_경우_포인트_내역_조회에_성공한다() {
         // given: 포인트 이용 이력이 있는 아이디
         long userId = 1L;
 
@@ -125,7 +124,7 @@ public class PointsServiceTest {
     }
 
     @Test
-    public void 포인트_충전_또는_사용_이력이_없는_경우_포인트_내역_조회에_실패한다() {
+    public void 사용_이력이_없는_경우_포인트_내역_조회에_실패한다() {
         // given: 포인트 이용 이력이 없는 아이디
         long userId = 4L;
 
@@ -150,7 +149,6 @@ public class PointsServiceTest {
         });
         assertEquals("userId가 존재하지 않습니다.", exception.getMessage());
     }
-
 
     /**
      * 포인트 충전 테스트

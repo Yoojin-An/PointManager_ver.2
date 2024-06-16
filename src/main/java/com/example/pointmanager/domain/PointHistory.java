@@ -5,16 +5,17 @@ import lombok.*;
 
 @Getter
 @Entity
-public class PointsHistory{
+@Table(name = "point_histories")
+public class PointHistory {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "history_id")
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "user_id")
     private long userId;
 
-    @Column(name = "amount_of_points")
+    @Column(name = "amount")
     private long amount;
 
     @Enumerated(EnumType.STRING)
@@ -31,16 +32,16 @@ public class PointsHistory{
         USE
     }
 
-    public static PointsHistory of(long userId,
-                                   long amount,
-                                   TransactionType transactionType) {
-        PointsHistory pointsHistory = new PointsHistory();
-        pointsHistory.id = null;
-        pointsHistory.userId = userId;
-        pointsHistory.amount = amount;
-        pointsHistory.transactionType = transactionType;
-        pointsHistory.updateMillis = System.currentTimeMillis();
-        return pointsHistory;
+    public static PointHistory of(long userId,
+                                  long amount,
+                                  TransactionType transactionType) {
+        PointHistory pointHistory = new PointHistory();
+        pointHistory.id = null;
+        pointHistory.userId = userId;
+        pointHistory.amount = amount;
+        pointHistory.transactionType = transactionType;
+        pointHistory.updateMillis = System.currentTimeMillis();
+        return pointHistory;
     }
 
     @Override
