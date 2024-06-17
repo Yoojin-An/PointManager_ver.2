@@ -25,12 +25,12 @@ public class PointService {
                 .orElseThrow(() -> new InvalidPointsException("userId가 존재하지 않습니다."));
     }
 
-    public List<PointHistory> findPointHistory(long userId) {
-        List<PointHistory> pointHistory = pointHistoryRepository.findAllPointHistoriesByUserId(userId);
-        if (pointHistory.isEmpty()) {
+    public List<PointHistory> findPointHistories(long userId) {
+        List<PointHistory> pointHistories = pointHistoryRepository.findAllPointHistoriesByUserId(userId);
+        if (pointHistories.isEmpty()) {
             throw new InvalidPointsException("userId가 존재하지 않습니다.");
         }
-        return pointHistory;
+        return pointHistories;
     }
 
     @Transactional

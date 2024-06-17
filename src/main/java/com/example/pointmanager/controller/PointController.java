@@ -55,11 +55,11 @@ public class PointController {
             @PathVariable long id
     ) {
         try {
-            List<PointHistory> pointHistory = pointService.findPointHistory(id);
-            List<PointHistoryResponse> pointHistoryResponse = pointHistory.stream()
+            List<PointHistory> pointHistories = pointService.findPointHistories(id);
+            List<PointHistoryResponse> pointHistoryResponse = pointHistories.stream()
                     .map(o -> new PointHistoryResponse(o))
                     .collect(Collectors.toList());
-        logger.info(String.format("id %d번 유저가 포인트 충전/사용 내역을 조회했습니다. :: %s", id, pointHistory.toString()));
+        logger.info(String.format("id %d번 유저가 포인트 충전/사용 내역을 조회했습니다. :: %s", id, pointHistories.toString()));
             return CommonResponse.of(pointHistoryResponse);
         } catch (Exception e) {
             return CommonResponse.of(Optional.of(e.getMessage()));
