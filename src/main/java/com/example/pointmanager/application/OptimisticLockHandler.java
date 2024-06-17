@@ -1,0 +1,35 @@
+package com.example.pointmanager.application;
+
+import com.example.pointmanager.domain.Point;
+import com.example.pointmanager.exception.InvalidPointsException;
+import com.example.pointmanager.repository.PointRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+@Component
+@RequiredArgsConstructor
+public class OptimisticLockHandler {
+    public Point getOrCreatePointWithOptimisticLock(PointRepository pointRepository,
+                                                    long userId) {
+        while (true) {
+            try {
+                return pointRepository.findPointByUserIdWithOptimisticLock(userId)
+                        .orElseGet(() -> new Point(userId, 0));
+            } catch (Exception e) {
+                throw new RuntimeException(e.getMessage());
+            }
+        }
+    }
+
+    public Point getPointWithOptimisticLock(PointRepository pointRepository,
+                                            long userId) {
+        while (true) {
+            try {
+                return pointRepository.findPointByUserIdWithOptimisticLock(userId)
+                        .orElseThrow(() -> new InvalidPointsException("userId가 존재하지 않습니다."));
+            } catch (InvalidPointsException e) {
+                throw new RuntimeException(e.getMessage());
+            }
+        }
+    }
+}

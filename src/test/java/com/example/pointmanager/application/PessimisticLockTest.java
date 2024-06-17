@@ -1,10 +1,9 @@
 package com.example.pointmanager.application;
 
-import com.example.pointmanager.domain.Points;
-import com.example.pointmanager.repository.PointsHistoryRepository;
-import com.example.pointmanager.repository.PointsRepository;
+import com.example.pointmanager.domain.Point;
+import com.example.pointmanager.repository.PointHistoryRepository;
+import com.example.pointmanager.repository.PointRepository;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,25 +13,25 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 // 비관 락을 사용한 동시성 테스트
 @SpringBootTest
-public class PessimisticLockPointsServiceTest {
+public class PessimisticLockTest {
 
     @Autowired
-    private PessimisticLockPointsService pessimisticLockPointsService;
+    private PointService pointService;
 
     @Autowired
-    private PointsRepository pointsRepository;
+    private PointRepository pointRepository;
 
     @Autowired
-    private PointsHistoryRepository pointsHistoryRepository;
+    private PointHistoryRepository pointHistoryRepository;
 
     @AfterEach
     public void after() {
-        pointsRepository.deleteAll();
-        pointsHistoryRepository.deleteAll();
+        pointRepository.deleteAll();
+        pointHistoryRepository.deleteAll();
     }
     @Test
     void 동시에_100번의_충전에_성공한다() throws InterruptedException {
-        pointsRepository.save(new Points(1, 0));
+        pointRepository.save(new Point(1, 0));
         int threadCount = 100;
         int chargeAmount = 1000;
         ExecutorService executorService = Executors.newFixedThreadPool(32);
@@ -42,7 +41,7 @@ public class PessimisticLockPointsServiceTest {
         for (int i = 0; i < threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    pessimisticLockPointsService.chargePoints(1L, chargeAmount);
+                    pointService.chargePoint(1L, chargeAmount, false);
                 } finally {
                     latch.countDown();
                 }
@@ -50,7 +49,7 @@ public class PessimisticLockPointsServiceTest {
         }
         latch.await();
 
-        Points points = pointsRepository.findPointsByUserId(1L).orElseThrow();
-        assertEquals(expectedAmount, points.getAmount());
+        Point point = pointRepository.findPointsByUserId(1L).orElseThrow();
+        assertEquals(expectedAmount, point.getAmount());
     }
 }

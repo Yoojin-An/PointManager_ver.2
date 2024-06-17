@@ -5,40 +5,65 @@ import com.example.pointmanager.domain.PointHistory;
 import com.example.pointmanager.exception.InvalidPointsException;
 import com.example.pointmanager.repository.PointHistoryRepository;
 import com.example.pointmanager.repository.PointRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-//@Service
-//@RequiredArgsConstructor
-public abstract class PointsService {
-    protected final PointRepository pointRepository;
-    protected final PointHistoryRepository pointHistoryRepository;
+@Service
+@RequiredArgsConstructor
+public class PointService {
 
-    public PointsService(PointRepository pointRepository, PointHistoryRepository pointHistoryRepository) {
-        this.pointRepository = pointRepository;
-        this.pointHistoryRepository = pointHistoryRepository;
-    }
+    private final PointRepository pointRepository;
+    private final PointHistoryRepository pointHistoryRepository;
+    private final OptimisticLockHandler optimisticLockHandler;
+    private final PessimisticLockHandler pessimisticLockHandler;
 
-    public Point enrollUser(long userId) {
-        Point point = new Point(userId, 0);
-        pointRepository.save(point);
-        return point;
-    }
-
-    public Point findPoints(long userId) {
-        return pointRepository.findPointsByUserId(userId)
+    public Point findPoint(long userId) {
+        return pointRepository.findPointById(userId)
                 .orElseThrow(() -> new InvalidPointsException("userId가 존재하지 않습니다."));
     }
 
-    public List<PointHistory> findPointsHistory(long userId) {
-        List<PointHistory> pointHistory = pointHistoryRepository.findPointsHistoryByUserId(userId);
+    public List<PointHistory> findPointHistory(long userId) {
+        List<PointHistory> pointHistory = pointHistoryRepository.findAllPointHistoriesByUserId(userId);
         if (pointHistory.isEmpty()) {
             throw new InvalidPointsException("userId가 존재하지 않습니다.");
         }
         return pointHistory;
     }
 
-    public abstract Point chargePoints(long userId, long amountToCharge) throws InterruptedException;
+    @Transactional
+    public Point chargePoint(long userId, long chargeAmount, boolean useOptimisticLock) {
+        Point point;
+        if (useOptimisticLock) {
+            point = optimisticLockHandler.getOrCreatePointWithOptimisticLock(pointRepository, userId);
+        } else {
+            point = pessimisticLockHandler.getOrCreatePointWithPessimisticLock(pointRepository, userId);
+        }
 
-    public abstract Point usePoints(long userId, long amountToUse) throws InterruptedException;
+        Point updatedPoint = point.charge(chargeAmount);
+
+        pointRepository.save(updatedPoint);
+        pointHistoryRepository.save(PointHistory.of(userId, chargeAmount, PointHistory.TransactionType.CHARGE));
+
+        return updatedPoint;
+    }
+
+    @Transactional
+    public Point usePoint(long userId, long useAmount, boolean useOptimisticLock) {
+        Point point;
+        if (useOptimisticLock) {
+            point = optimisticLockHandler.getPointWithOptimisticLock(pointRepository, userId);
+        } else {
+            point = pessimisticLockHandler.getPointWithPessimisticLock(pointRepository, userId);
+        }
+
+        Point updatedPoint = point.charge(useAmount);
+
+        pointRepository.save(updatedPoint);
+        pointHistoryRepository.save(PointHistory.of(userId, useAmount, PointHistory.TransactionType.CHARGE));
+
+        return updatedPoint;
+    }
 }

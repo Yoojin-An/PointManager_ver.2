@@ -1,11 +1,9 @@
 package com.example.pointmanager.application;
 
-import com.example.pointmanager.PointManagerApplication;
-import com.example.pointmanager.domain.Points;
-import com.example.pointmanager.repository.PointsHistoryRepository;
-import com.example.pointmanager.repository.PointsRepository;
+import com.example.pointmanager.domain.Point;
+import com.example.pointmanager.repository.PointHistoryRepository;
+import com.example.pointmanager.repository.PointRepository;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,28 +17,28 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 // 낙관 락을 사용한 동시성 테스트
 @SpringBootTest
 //@SpringBootTest(classes = PointManagerApplication.class)
-public class OptimisticLockPointsFacadeTest {
-    private final OptimisticLockPointsFacade optimisticLockPointsFacade;
-    private final PointsRepository pointsRepository;
-    private final PointsHistoryRepository pointsHistoryRepository;
+public class OptimisticLockPointFacadeTest {
+    private final OptimisticLockPointFacade optimisticLockPointsFacade;
+    private final PointRepository pointRepository;
+    private final PointHistoryRepository pointHistoryRepository;
     @Autowired
-    public OptimisticLockPointsFacadeTest(OptimisticLockPointsFacade optimisticLockPointsFacade,
-                                          PointsRepository pointsRepository,
-                                          PointsHistoryRepository pointsHistoryRepository) {
+    public OptimisticLockPointFacadeTest(OptimisticLockPointFacade optimisticLockPointsFacade,
+                                         PointRepository pointRepository,
+                                         PointHistoryRepository pointHistoryRepository) {
         this.optimisticLockPointsFacade = optimisticLockPointsFacade;
-        this.pointsRepository = pointsRepository;
-        this.pointsHistoryRepository = pointsHistoryRepository;
+        this.pointRepository = pointRepository;
+        this.pointHistoryRepository = pointHistoryRepository;
     }
 
     @AfterEach
     public void after() {
-        pointsRepository.deleteAll();
-        pointsHistoryRepository.deleteAll();
+        pointRepository.deleteAll();
+        pointHistoryRepository.deleteAll();
     }
 
     @Test
     void 동시에_100번의_충전에_성공한다() throws InterruptedException {
-        pointsRepository.save(new Points(1, 0));
+        pointRepository.save(new Point(1, 0));
         int threadCount = 100;
         ExecutorService executorService = Executors.newFixedThreadPool(32);
         CountDownLatch latch = new CountDownLatch(threadCount);
@@ -59,9 +57,9 @@ public class OptimisticLockPointsFacadeTest {
         }
         latch.await();
 
-        Points points = pointsRepository.findPointsByUserIdWithOptimisticLock(1L).orElseThrow();
-        System.out.println(points.getVersion());
+        Point point = pointRepository.findPointsByUserIdWithOptimisticLock(1L).orElseThrow();
+        System.out.println(point.getVersion());
 
-       assertEquals(100, points.getAmount());
+       assertEquals(100, point.getAmount());
     }
 }
