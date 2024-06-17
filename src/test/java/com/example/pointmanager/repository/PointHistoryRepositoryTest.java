@@ -1,83 +1,95 @@
 package com.example.pointmanager.repository;
 
-import com.example.pointmanager.domain.PointsHistory;
+import com.example.pointmanager.domain.PointHistory;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-public class PointsHistoryRepositoryTest {
+public class PointHistoryRepositoryTest {
 
     @Autowired
-    PointsHistoryRepository pointsHistoryRepository;
+    PointHistoryRepository pointHistoryRepository;
+
+    @AfterEach
+    void after() {
+        pointHistoryRepository.deleteAllInBatch();
+    }
 
     @Test
-    void PointsHistoryRepository가_제대로_연결되었다() {
+    void PointHistoryRepository가_제대로_연결되었다() {
         // given
-        PointsHistory pointsHistory = PointsHistory.of(1, 10000L, PointsHistory.TransactionType.USE);
+        long userId = 1L;
+        long amount = 10000L;
+        PointHistory pointHistory = PointHistory.of(userId, amount, PointHistory.TransactionType.USE);
 
         // when
-        PointsHistory result = pointsHistoryRepository.save(pointsHistory);
+        PointHistory result = pointHistoryRepository.save(pointHistory);
 
         // then
-        assertThat(result.get(0).getUserId()).isEqualTo(1);
-        assertThat(result.get(0).getAmount()).isEqualTo(pointsHistory.getAmount());
+        assertThat(result.getUserId()).isEqualTo(userId);
+        assertThat(result.getAmount()).isEqualTo(amount);
     }
     @Test
-    void findPointsHistoryByUserId_메서드로_pointsHistory_데이터를_찾아올_수_있다() {
+    void findPointHistoryByUserId_메서드로_pointHistory_데이터를_찾아올_수_있다() {
         // given
-        PointsHistory pointsHistory = PointsHistory.of(1, 10000L, PointsHistory.TransactionType.USE);
-        pointsHistoryRepository.save(pointsHistory);
+        long userId = 1L;
+        long amount = 10000L;
+        PointHistory pointHistory = PointHistory.of(userId, amount, PointHistory.TransactionType.USE);
+        pointHistoryRepository.save(pointHistory);
 
         // when
-        List<PointsHistory> result = pointsHistoryRepository.findPointsHistoryByUserId(1L);
+        List<PointHistory> result = pointHistoryRepository.findAllPointHistoriesByUserId(userId);
 
         // then
-        assertEquals(1L, result.get(0).getUserId());
-        assertEquals(10000L, result.get(0).getAmount());
+        assertThat(result.get(0).getUserId()).isEqualTo(userId);
+        assertThat(result.get(0).getAmount()).isEqualTo(amount);
     }
 
     @Test
-    void findPointsHistoryByUserId_메서드는_pointsHistory_데이터가_없으면_빈_리스트를_내려준다() {
-        // given - None
-
-        // when
-        List<PointsHistory> result = pointsHistoryRepository.findPointsHistoryByUserId(1L);
-
-        // then
-        assertEquals(new ArrayList<>(), result);
-    }
-
-    @Test
-    void findPointsHistoryByUserIdWithPessimisticLock_메서드로_points_데이터를_찾아올_수_있다() {
+    void findAllPointHistoriesByUserId_메서드는_pointHistory_데이터가_없으면_빈_리스트를_내려준다() {
         // given
-        PointsHistory pointsHistory = PointsHistory.of(1, 10000L, PointsHistory.TransactionType.USE);
-        pointsHistoryRepository.save(pointsHistory);
+        long userId = 1L;
 
         // when
-        List<PointsHistory> result = pointsHistoryRepository.findPointsHistoryByUserIdWithPessimisticLock(1L);
+        List<PointHistory> result = pointHistoryRepository.findAllPointHistoriesByUserId(userId);
 
         // then
-        assertEquals(1L, result.get(0).getUserId());
-        assertEquals(10000L, result.get(0).getAmount());
+        assertThat(result).isEqualTo(new ArrayList<>());
     }
 
     @Test
-    void findPointsHistoryByUserIdWithPessimisticLock_메서드는_pointsHistory_데이터가_없으면_빈_리스트를_내려준다() {
-        // given - None
+    void findAllPointHistoriesByUserIdWithPessimisticLock_메서드로_points_데이터를_찾아올_수_있다() {
+        // given
+        long userId = 1L;
+        long amount = 10000L;
+        PointHistory pointHistory = PointHistory.of(userId, amount, PointHistory.TransactionType.USE);
+        pointHistoryRepository.save(pointHistory);
 
         // when
-        List<PointsHistory> result = pointsHistoryRepository.findPointsHistoryByUserIdWithPessimisticLock(1L);
+        List<PointHistory> result = pointHistoryRepository.findAllPointHistoriesByUserIdWithPessimisticLock(userId);
 
         // then
-        assertEquals(new ArrayList<>(), result);
+        assertThat(result.get(0).getId()).isEqualTo(userId);
+        assertThat(result.get(0).getAmount()).isEqualTo(amount);
+    }
+
+    @Test
+    void findAllPointHistoriesByUserIdWithPessimisticLock_메서드는_pointsHistory_데이터가_없으면_빈_리스트를_내려준다() {
+        // given
+        long userId = 1L;
+
+        // when
+        List<PointHistory> result = pointHistoryRepository.findAllPointHistoriesByUserIdWithPessimisticLock(userId);
+
+        // then
+        assertThat(result).isEqualTo(new ArrayList<>());
     }
 }

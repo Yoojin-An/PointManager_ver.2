@@ -1,110 +1,128 @@
 package com.example.pointmanager.repository;
 
-import com.example.pointmanager.domain.Points;
+import com.example.pointmanager.domain.Point;
+import com.example.pointmanager.domain.PointHistory;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-public class PointsRepositoryTest {
+public class PointRepositoryTest {
 
     @Autowired
-    PointsRepository pointsRepository;
+    PointRepository pointRepository;
+
+    @AfterEach
+    void after() {
+        pointRepository.deleteAllInBatch();
+    }
 
     @Test
     void PointsRepository가_제대로_연결되었다() {
         // given
-        Points points = new Points(1L, 10000L);
+        long userId = 1L;
+        long amount = 10000L;
+        Point point = new Point(userId, amount);
 
         // when
-        Points result = pointsRepository.save(points);
+        Point result = pointRepository.save(point);
 
         // then
-        assertEquals(1L, result.getUserId());
-        assertEquals(points.getAmount(), result.getAmount());
+        assertThat(result.getId()).isEqualTo(userId);
+        assertThat(result.getAmount()).isEqualTo(amount);
     }
+
     @Test
-    void findPointsByUserId_메서드로_points_데이터를_찾아올_수_있다() {
+    void findPointsById_메서드로_point_데이터를_찾아올_수_있다() {
         // given
-        Points points = new Points(1L, 10000L);
-        pointsRepository.save(points);
+        long userId = 1L;
+        long amount = 10000L;
+        Point point = new Point(userId, amount);
+        pointRepository.save(point);
 
         // when
-        Optional<Points> result = pointsRepository.findPointsByUserId(1L);
+        Optional<Point> result = pointRepository.findPointById(1L);
 
         // then
         assertTrue(result.isPresent());
-        assertEquals(1L, result.get().getUserId());
-        assertEquals(10000L, result.get().getAmount());
+        assertThat(result.get().getId()).isEqualTo(userId);
+        assertThat(result.get().getAmount()).isEqualTo(amount);
     }
 
     @Test
-    void findPointsByUserId_메서드는_points_데이터가_없으면_빈_리스트를_내려준다() {
+    void findPointById_메서드는_point_데이터가_없으면_빈_Optional_객체를_내려준다() {
         // given - None
 
         // when
-        Optional<Points> result = pointsRepository.findPointsByUserId(1L);
+        Optional<Point> result = pointRepository.findPointById(1L);
 
         // then
         assertFalse(result.isPresent());
-        assertEquals(Optional.empty(), result);
+        assertThat(result).isEqualTo(Optional.empty());
     }
 
     @Test
-    void findPointsByUserIdWithOptimisticLock_메서드로_points_데이터를_찾아올_수_있다() {
+    void findPointByUserIdWithOptimisticLock_메서드로_point_데이터를_찾아올_수_있다() {
         // given
-        Points points = new Points(1L, 10000L);
-        pointsRepository.save(points);
+        long userId = 1L;
+        long amount = 10000L;
+        Point point = new Point(userId, amount);
+        pointRepository.save(point);
 
         // when
-        Optional<Points> result = pointsRepository.findPointsByUserIdWithOptimisticLock(1L);
+        Optional<Point> result = pointRepository.findPointByUserIdWithOptimisticLock(1L);
 
         // then
         assertTrue(result.isPresent());
-        assertEquals(1L, result.get().getUserId());
-        assertEquals(10000L, result.get().getAmount());
+        assertThat(result.get().getId()).isEqualTo(userId);
+        assertThat(result.get().getAmount()).isEqualTo(amount);
     }
 
     @Test
-    void findPointsByUserIdWithOptimisticLock_메서드는_points_데이터가_없으면_빈_리스트를_내려준다() {
+    void findPointByUserIdWithOptimisticLock_메서드는_point_데이터가_없으면_빈_Optional_객체를_내려준다() {
         // given - None
 
         // when
-        Optional<Points> result = pointsRepository.findPointsByUserIdWithOptimisticLock(1L);
+        Optional<Point> result = pointRepository.findPointByUserIdWithOptimisticLock(1L);
 
         // then
         assertFalse(result.isPresent());
-        assertEquals(Optional.empty(), result);
+        assertThat(result).isEqualTo(Optional.empty());
     }
 
     @Test
-    void findPointsByUserIdWithPessimisticLock_메서드로_points_데이터를_찾아올_수_있다() {
+    void findPointByUserIdWithPessimisticLock_메서드로_point_데이터를_찾아올_수_있다() {
         // given
-        Points points = new Points(1L, 10000L);
-        pointsRepository.save(points);
+        long userId = 1L;
+        long amount = 10000L;
+        Point point = new Point(userId, amount);
+        pointRepository.save(point);
 
         // when
-        Optional<Points> result = pointsRepository.findPointsByUserIdWithPessimisticLock(1L);
+        Optional<Point> result = pointRepository.findPointByUserIdWithPessimisticLock(1L);
 
         // then
         assertTrue(result.isPresent());
-        assertEquals(1L, result.get().getUserId());
-        assertEquals(10000L, result.get().getAmount());
+        assertThat(result.get().getId()).isEqualTo(userId);
+        assertThat(result.get().getAmount()).isEqualTo(amount);
     }
 
     @Test
-    void findPointsByUserIdWithPessimisticLock_메서드는_points_데이터가_없으면_빈_리스트를_내려준다() {
+    void findPointsByUserIdWithPessimisticLock_메서드는_points_데이터가_없으면_빈_Optional_객체를_내려준다() {
         // given - None
 
         // when
-        Optional<Points> result = pointsRepository.findPointsByUserIdWithPessimisticLock(1L);
+        Optional<Point> result = pointRepository.findPointByUserIdWithPessimisticLock(1L);
 
         // then
         assertFalse(result.isPresent());
-        assertEquals(Optional.empty(), result);
+        assertThat(result).isEqualTo(Optional.empty());
     }
 }
