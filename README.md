@@ -62,7 +62,6 @@
 ### 테스트 시나리오
 * 단위 테스트
   * domain
-    * d
   * repository
     * PointsRepositoryTest
     * PointsHistoryRepositoryTest
