@@ -1,6 +1,6 @@
 package com.example.pointmanager.domain;
 
-import com.example.pointmanager.exception.InvalidPointsException;
+import com.example.pointmanager.exception.InvalidPointException;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,15 +25,15 @@ public class Point {
         this.amount = amount;
     }
     public Point charge(long chargeAmount) {
-        if (chargeAmount < 0) throw new InvalidPointsException("포인트 충전 불가: 유효하지 않은 값입니다.");
+        if (chargeAmount <= 0) throw new InvalidPointException("포인트 충전 불가: 유효하지 않은 값입니다.");
         long amount = this.amount + chargeAmount;
         return new Point(this.id, amount);
     }
 
     public Point use(long useAmount) {
-        if (useAmount < 0) throw new InvalidPointsException("포인트 사용 불가: 유효하지 않은 값입니다.");
+        if (useAmount <= 0) throw new InvalidPointException("포인트 사용 불가: 유효하지 않은 값입니다.");
         long amount = this.amount - useAmount;
-        if (amount < 0) throw new InvalidPointsException("포인트 사용 불가: 잔고가 부족합니다.");
+        if (amount < 0) throw new InvalidPointException("포인트 사용 불가: 잔고가 부족합니다.");
         return new Point(this.id, amount);
     }
 }

@@ -20,8 +20,6 @@ public class PointService {
     private final PointValidator pointValidator;
     private final PointHistoryValidator pointHistoryValidator;
 
-    // TODO: Autowired 해야하나???
-
     public Point findPoint(long userId) {
         Optional<Point> point = pointRepository.findPointById(userId);
         pointValidator.validate(point);

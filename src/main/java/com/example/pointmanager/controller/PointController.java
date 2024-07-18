@@ -34,7 +34,7 @@ public class PointController {
      * 특정 유저의 포인트 조회
      */
     @GetMapping("{id}")
-    public CommonResponse<PointResponse> findPoints(
+    public CommonResponse<PointResponse> findPoint(
             @PathVariable long id
     ) {
         try {
@@ -59,7 +59,7 @@ public class PointController {
             List<PointHistoryResponse> pointHistoryResponse = pointHistories.stream()
                     .map(o -> new PointHistoryResponse(o))
                     .collect(Collectors.toList());
-        logger.info(String.format("id %d번 유저가 포인트 충전/사용 내역을 조회했습니다. :: %s", id, pointHistories.toString()));
+            logger.info(String.format("id %d번 유저가 포인트 충전/사용 내역을 조회했습니다. :: %s", id, pointHistories.toString()));
             return CommonResponse.of(pointHistoryResponse);
         } catch (Exception e) {
             return CommonResponse.of(Optional.of(e.getMessage()));

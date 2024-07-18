@@ -11,12 +11,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 public class PointServiceTest {
-
     @Autowired
     private PointService pointService;
 
@@ -28,7 +26,6 @@ public class PointServiceTest {
 
     @BeforeEach
     void before() {
-        // 초기 값으로 10000 포인트를 가진 1번 유저가 10000 포인트 3번 충전, 30000 포인트 1번 사용 결과 잔고에 10000 포인트가 있는 상황을 가정
         pointRepository.save(new Point(1L, 10000L));
         pointHistoryRepository.saveAndFlush(PointHistory.of(1L, 10000L, PointHistory.TransactionType.CHARGE));
         pointHistoryRepository.saveAndFlush(PointHistory.of(1L, 10000L, PointHistory.TransactionType.CHARGE));
@@ -42,10 +39,9 @@ public class PointServiceTest {
         pointHistoryRepository.deleteAllInBatch();
     }
 
-
-    @DisplayName("포인트 조회 테스트")
     @Nested
-    class FindPointTest {
+    @DisplayName("포인트 조회 테스트")
+    public class FindPointTest {
         @Test
         void 포인트_조회에_성공한다() {
             // given
@@ -53,10 +49,21 @@ public class PointServiceTest {
             long expectedAmount = 10000L;
 
             // when
-            long point = pointService.findPoint(userId).getAmount();
+            long amount = pointService.findPoint(userId).getAmount();
 
             // then
-            assertThat(point).isEqualTo(expectedAmount);
+            assertThat(amount).isEqualTo(expectedAmount);
+        }
+
+        @Test
+        void 포인트_이용_내역이_없는_경우_조회에_실패한다() {
+            // given
+            long userId = 2L;
+
+            // when & then
+            assertThrows(InvalidPointException.class, () -> {
+                pointService.findPoint(userId);
+            });
         }
 
         @Test
@@ -70,16 +77,6 @@ public class PointServiceTest {
             });
         }
 
-        @Test
-        void 포인트_이용_내역이_없는_경우_조회에_실패한다() {
-            // given
-            long userId = 2L;
-
-            // when & then
-            assertThrows(InvalidPointException.class, () -> {
-                pointService.findPoint(userId);
-            });
-        }
     }
 
 
